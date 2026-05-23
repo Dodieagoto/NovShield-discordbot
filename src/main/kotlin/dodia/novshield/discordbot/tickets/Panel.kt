@@ -11,13 +11,7 @@ import net.dv8tion.jda.api.components.container.Container
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-import net.dv8tion.jda.api.components.textinput.TextInput
-import net.dv8tion.jda.api.modals.Modal
-import net.dv8tion.jda.api.components.textdisplay.TextDisplay
-import net.dv8tion.jda.api.components.separator.Separator
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
-import dodia.novshield.discordbot.tickets.ModalField
-import dodia.novshield.discordbot.tickets.Panel
 
 data class ModalField(
     val id: String,

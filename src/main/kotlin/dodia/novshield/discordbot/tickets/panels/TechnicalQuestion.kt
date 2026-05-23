@@ -1,13 +1,12 @@
 package dodia.novshield.discordbot.tickets.panels
 
-import dev.minn.jda.ktx.interactions.components.Separator
+
 import dodia.novshield.discordbot.tickets.Panel
 import dodia.novshield.discordbot.tickets.ModalField
+
+import dev.minn.jda.ktx.interactions.components.Separator
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
-
-
-import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.components.container.Container
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.modals.Modal
