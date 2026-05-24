@@ -5,13 +5,24 @@
 
 package dodia.novshield.discordbot.tickets
 
+import dev.minn.jda.ktx.interactions.components.button
 import net.dv8tion.jda.api.Permission
 
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import dev.minn.jda.ktx.interactions.components.button
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.container.Container
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import java.awt.Color
+import net.dv8tion.jda.api.entities.emoji.Emoji
+
+import org.jetbrains.exposed.sql.transactions.transaction
+import java.time.LocalDateTime
+import dodia.novshield.discordbot.tickets.database.Ticket
+import dodia.novshield.discordbot.tickets.database.TicketField
 
 data class ModalField(
     val id: String,
@@ -30,6 +41,15 @@ abstract class Panel(
     val channelPrefix: String,
 
 ){
+
+    val closeButton = button(
+        label = "Закрыть",
+        style = ButtonStyle.DANGER,
+
+        customId = "btn_close",
+        emoji = Emoji.fromUnicode("❌")
+
+    )
 
     abstract fun sendTicketLog()
     abstract fun showModal(event: StringSelectInteractionEvent)
@@ -72,6 +92,31 @@ abstract class Panel(
             .flatMap { channel -> channel.sendMessage(message) }
             .queue(
                 { successMessage ->
+
+                    val channel = successMessage.channel
+
+
+                    transaction {
+
+                        val newTicket = Ticket.new {
+                            this.channelId = channel.idLong
+                            this.authorId = member.idLong
+                            this.ticketType = channelPrefix
+                            this.createdAt = LocalDateTime.now()
+                        }
+
+
+                        event.values.forEach { fieldValue ->
+                            TicketField.new {
+                                this.ticket = newTicket
+                                this.fieldLabel = fieldValue.customId
+                                this.fieldValue = fieldValue.asString
+                            }
+                        }
+                    }
+
+
+
                     event.hook.sendMessage("Ваш тикет успешно создан: ${successMessage.channel.asMention}")
                         .setEphemeral(true)
                         .queue()

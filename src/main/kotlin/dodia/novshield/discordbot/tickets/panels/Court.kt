@@ -1,7 +1,9 @@
 package dodia.novshield.discordbot.tickets.panels
 
+import dev.minn.jda.ktx.interactions.components.button
 import dodia.novshield.discordbot.tickets.ModalField
 import dodia.novshield.discordbot.tickets.Panel
+import net.dv8tion.jda.api.components.buttons.ButtonStyle
 
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.modals.Modal
@@ -12,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 import net.dv8tion.jda.api.components.separator.Separator
 import net.dv8tion.jda.api.components.container.Container
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 
 
 object Court : Panel(
@@ -98,7 +101,15 @@ object Court : Panel(
             TextDisplay.of("**Доказательства:**\n$field4")
         )
 
-        return listOf(container)
+
+
+        val downContainer = Container.of(
+            ActionRow.of(
+                closeButton
+            )
+        )
+
+        return listOf(container, downContainer)
     }
 
 

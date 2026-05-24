@@ -2,6 +2,9 @@ package dodia.novshield.discordbot
 
 import dodia.novshield.discordbot.tickets.listeners.selectMenuListener
 import dodia.novshield.discordbot.tickets.listeners.modalSubmitListener
+import dodia.novshield.discordbot.tickets.listeners.buttonListener
+
+import dodia.novshield.discordbot.tickets.database.initDatabase
 
 import io.github.cdimascio.dotenv.Dotenv
 
@@ -34,6 +37,8 @@ fun main(){
         throw IllegalStateException("SEND_COMMAND not started in .env")
 
 
+    initDatabase()
+    println("DB initialized")
 
     val jda = light(token){
         enableIntents(
@@ -120,6 +125,7 @@ fun main(){
 
     selectMenuListener(jda)
     modalSubmitListener(jda)
+    buttonListener(jda)
 
     jda.listener<ReadyEvent> {
         println("Bot is ready!")
