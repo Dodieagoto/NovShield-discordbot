@@ -14,7 +14,7 @@ import dodia.novshield.discordbot.tickets.panels.TechnicalQuestion
 import dodia.novshield.discordbot.tickets.panels.TerritoryReg
 
 
-public fun modalSubmitListener(jda: JDA) {
+fun modalSubmitListener(jda: JDA) {
 
     jda.listener<ModalInteractionEvent> { event ->
 

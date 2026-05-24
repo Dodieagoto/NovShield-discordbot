@@ -1,9 +1,7 @@
 package dodia.novshield.discordbot.tickets.panels
 
-import dev.minn.jda.ktx.interactions.components.button
 import dodia.novshield.discordbot.tickets.ModalField
 import dodia.novshield.discordbot.tickets.Panel
-import net.dv8tion.jda.api.components.buttons.ButtonStyle
 
 import net.dv8tion.jda.api.components.textinput.TextInput
 import net.dv8tion.jda.api.modals.Modal
@@ -16,16 +14,56 @@ import net.dv8tion.jda.api.components.separator.Separator
 import net.dv8tion.jda.api.components.container.Container
 import net.dv8tion.jda.api.components.actionrow.ActionRow
 
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import java.time.format.DateTimeFormatter
+
+import dodia.novshield.discordbot.tickets.database.Ticket
+
 
 object Court : Panel(
     logChannel = "1507440553673883738",
     panelHEX = 0xFF0000,
     supportRole = "1506338573631356958",
-    ticketCategory = "1506320009293467728",
+    ticketCategory = "1508059255893393499",
     channelPrefix = "суд"
 
 ) {
-    override fun sendTicketLog() {}
+    override fun sendTicketLog(event: ButtonInteractionEvent, dbTicket: Ticket) {
+        val jda = event.jda
+        val logTextChannel = jda.getTextChannelById(this.logChannel) ?: return
+
+        val field1Val = dbTicket.fields.find { it.fieldLabel == "Court_field_1" }?.fieldValue ?: "Нет данных"
+        val field2Val = dbTicket.fields.find { it.fieldLabel == "Court_field_2" }?.fieldValue ?: "Нет данных"
+        val field3Val = dbTicket.fields.find { it.fieldLabel == "Court_field_3" }?.fieldValue ?: "Нет данных"
+        val field4Val = dbTicket.fields.find { it.fieldLabel == "Court_field_4" }?.fieldValue ?: "Нет данных"
+
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+        val closedTime = dbTicket.closedAt?.format(formatter) ?: "Неизвестно"
+
+        val logContainer = Container.of(
+            TextDisplay.of("📁 **Архив тикета №${dbTicket.id} [Исковое заявление в Суд]**"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+
+            TextDisplay.of("**Информация:**\n• Истец (Автор): <@${dbTicket.authorId}>\n• Закрыл дело: ${event.user.asMention}\n• Время закрытия: $closedTime"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+
+            TextDisplay.of("**Причина подачи:**\n$field1Val"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of("**Описание дела:**\n$field2Val"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of("**Требования:**\n$field3Val"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of("**Доказательства:**\n$field4Val")
+        ).withAccentColor(this.panelHEX)
+
+        val logMessage = MessageCreateBuilder()
+            .useComponentsV2()
+            .setComponents(logContainer)
+            .build()
+
+        logTextChannel.sendMessage(logMessage).queue()
+    }
 
 
     override fun showModal(event: StringSelectInteractionEvent) {
@@ -103,13 +141,13 @@ object Court : Panel(
 
 
 
-        val downContainer = Container.of(
+        val btnContainer = Container.of(
             ActionRow.of(
                 closeButton
             )
         )
 
-        return listOf(container, downContainer)
+        return listOf(container, btnContainer)
     }
 
 

@@ -5,6 +5,7 @@ import dodia.novshield.discordbot.tickets.Panel
 import dodia.novshield.discordbot.tickets.ModalField
 
 import dev.minn.jda.ktx.interactions.components.Separator
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.components.container.Container
@@ -14,15 +15,47 @@ import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import java.time.format.DateTimeFormatter
+
+import dodia.novshield.discordbot.tickets.database.Ticket
+
 object TechnicalQuestion : Panel(
     logChannel = "1507448073155121242",
     panelHEX = 0xFF0000,
     supportRole = "1506319265400225803",
-    ticketCategory = "1506320009293467728",
+    ticketCategory = "1508060340024381440",
     channelPrefix = "тех-вопрос"
 ){
-    override fun sendTicketLog() {
-        //todo() сделать логирование
+    override fun sendTicketLog(event: ButtonInteractionEvent, dbTicket: Ticket) {
+        val jda = event.jda
+        val logTextChannel = jda.getTextChannelById(this.logChannel) ?: return
+
+        val field1Val = dbTicket.fields.find { it.fieldLabel == "Tech_field_1" }?.fieldValue ?: "Нет данных"
+        val field2Val = dbTicket.fields.find { it.fieldLabel == "Tech_field_2" }?.fieldValue ?: "Нет данных"
+
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+        val closedTime = dbTicket.closedAt?.format(formatter) ?: "Неизвестно"
+
+        val logContainer = Container.of(
+            TextDisplay.of("📁 **Архив тикета №${dbTicket.id} [Технический вопрос]**"),
+            net.dv8tion.jda.api.components.separator.Separator.createDivider(net.dv8tion.jda.api.components.separator.Separator.Spacing.LARGE),
+
+            TextDisplay.of("**Информация:**\n• Автор: <@${dbTicket.authorId}>\n• Закрыл: ${event.user.asMention}\n• Время закрытия: $closedTime"),
+            net.dv8tion.jda.api.components.separator.Separator.createDivider(net.dv8tion.jda.api.components.separator.Separator.Spacing.LARGE),
+
+            TextDisplay.of("**Никнейм:**\n$field1Val"),
+            net.dv8tion.jda.api.components.separator.Separator.createDivider(net.dv8tion.jda.api.components.separator.Separator.Spacing.LARGE),
+            TextDisplay.of("**Вопрос:**\n$field2Val")
+        ).withAccentColor(this.panelHEX)
+
+        val logMessage = MessageCreateBuilder()
+            .useComponentsV2()
+            .setComponents(logContainer)
+            .build()
+
+        logTextChannel.sendMessage(logMessage).queue()
     }
 
     override fun showModal(event: StringSelectInteractionEvent) {
@@ -64,7 +97,13 @@ object TechnicalQuestion : Panel(
             TextDisplay.of("**Вопрос:** $field2")
         )
 
-        return listOf(container)
+        val btnContainer = Container.of(
+            ActionRow.of(
+                closeButton
+            )
+        )
+
+        return listOf(container, btnContainer)
 
     }
 

@@ -2,6 +2,7 @@ package dodia.novshield.discordbot.tickets.panels
 
 import dodia.novshield.discordbot.tickets.Panel
 import dodia.novshield.discordbot.tickets.ModalField
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -13,15 +14,50 @@ import net.dv8tion.jda.api.components.separator.Separator
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import java.time.format.DateTimeFormatter
+
+import dodia.novshield.discordbot.tickets.database.Ticket
+
 object Patent : Panel(
     logChannel = "1507447988514062397",
     panelHEX = 0xFF0000,
     supportRole = "1506319765730234379",
-    ticketCategory = "1506320009293467728",
+    ticketCategory = "1508061390089228378",
     channelPrefix = "патент"
 ) {
-    override fun sendTicketLog(){
+    override fun sendTicketLog(event: ButtonInteractionEvent, dbTicket: Ticket) {
+        val jda = event.jda
+        val logTextChannel = jda.getTextChannelById(this.logChannel) ?: return
 
+        val field1Val = dbTicket.fields.find { it.fieldLabel == "Patent_field_1" }?.fieldValue ?: "Нет данных"
+        val field2Val = dbTicket.fields.find { it.fieldLabel == "Patent_field_2" }?.fieldValue ?: "Нет данных"
+        val field3Val = dbTicket.fields.find { it.fieldLabel == "Patent_field_3" }?.fieldValue ?: "Нет данных"
+
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+        val closedTime = dbTicket.closedAt?.format(formatter) ?: "Неизвестно"
+
+        val logContainer = Container.of(
+            TextDisplay.of("📁 **Архив тикета №${dbTicket.id} [Заявка на патент]**"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+
+            TextDisplay.of("**Информация:**\n• Заявитель (Автор): <@${dbTicket.authorId}>\n• Закрыл: ${event.user.asMention}\n• Время закрытия: $closedTime"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+
+            TextDisplay.of("**На что патент?:**\n$field1Val"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of("**Доказательства:**\n$field2Val"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of("**Обоснование:**\n$field3Val")
+        ).withAccentColor(this.panelHEX)
+
+        val logMessage = MessageCreateBuilder()
+            .useComponentsV2()
+            .setComponents(logContainer)
+            .build()
+
+        logTextChannel.sendMessage(logMessage).queue()
     }
 
     override fun showModal(event: StringSelectInteractionEvent) {
@@ -45,18 +81,11 @@ object Patent : Panel(
 
             .build()
 
-        val pool4 = TextInput.create(field4.id, field4.style)
-            .setPlaceholder(field4.placeholder)
-            .setRequired(field4.required)
-
-            .build()
-
         val modal = Modal.create("Patent_panel", "📜 Подача патента")
             .addComponents(
                 Label.of(field1.label, pool1),
                 Label.of(field2.label, pool2),
                 Label.of(field3.label, pool3),
-                Label.of(field4.label, pool4)
             )
 
             .build()
@@ -78,9 +107,6 @@ object Patent : Panel(
         val field3 = event.getValue("Patent_field_3")
             ?.asString ?: "Нет данных"
 
-        val field4 = event.getValue("Patent_field_4")
-            ?.asString ?: "Нет данных"
-
         val container = Container.of(
             TextDisplay.of("📜 Подача патента"),
             Separator.createDivider(Separator.Spacing.LARGE),
@@ -89,43 +115,40 @@ object Patent : Panel(
             TextDisplay.of("**Краткое описание дела:**\n$field2"),
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**Требования:**\n$field3"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Доказательства:**\n$field4"),
 
             )
 
-        return listOf(container)
+        val btnContainer = Container.of(
+            ActionRow.of(
+                closeButton
+            )
+        )
+
+        return listOf(container, btnContainer)
 
     }
 
     val field1 = ModalField(
-        label = "Укажите причину подачи",
+        label = "На что патент?",
         id = "Patent_field_1",
-        placeholder = "Например: убийство, кража, гриф и т.п",
+        placeholder = "Например: постройка, песня, мап-арт и т.п",
         required = true,
         style = TextInputStyle.SHORT
     )
 
     val field2 = ModalField(
-        label = "Кратко опишите ваше дело",
+        label = "Доказательства",
         id = "Patent_field_2",
-        placeholder = "Не забудьте указать на кого вы подаёте дело",
+        placeholder = "Например, если это ваш скин, то скиньте файл и скриншот формы (ссылкой)",
         required = true,
         style = TextInputStyle.SHORT
     )
     val field3 = ModalField(
-        label = "Укажите требования",
+        label = "Дайте чёткое обоснование",
         id = "Patent_field_3",
-        placeholder = "Важно, чтобы требования были в рамках разумного",
+        placeholder = "Поясните, почему вам должны оформить патент",
         required = true,
         style = TextInputStyle.PARAGRAPH
     )
 
-    val field4 = ModalField(
-        label = "Предоставьте доказательства",
-        id = "Patent_field_4",
-        placeholder = "Запись экрана, скриншоты и т.п (ссылкой)",
-        required = true,
-        style = TextInputStyle.PARAGRAPH
-    )
 }

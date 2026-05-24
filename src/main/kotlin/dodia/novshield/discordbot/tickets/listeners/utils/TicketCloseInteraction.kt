@@ -18,7 +18,7 @@ import dodia.novshield.discordbot.tickets.database.Tickets
 
 fun ticketCloseInteraction(event: ButtonInteractionEvent) {
     val applyButton = button(
-        customId = "btn_apply",
+        customId = "btn_apply_close",
         label = "Подтвердить",
         style = ButtonStyle.SUCCESS,
     )
@@ -42,9 +42,12 @@ fun ticketCloseInteraction(event: ButtonInteractionEvent) {
 fun ticketCloseApply(event: ButtonInteractionEvent) {
     event.message.delete().queue()
 
+
+
     val channel = event.channel
     val textChannel = channel.asTextChannel()
     val statusText = "Тикет закрыт игроком ${event.user.asMention}"
+    var ticketPanel: String? = null
     var authorId: Long? = null
 
     transaction {
@@ -53,11 +56,13 @@ fun ticketCloseApply(event: ButtonInteractionEvent) {
             dbTicket.status = "CLOSED"
             dbTicket.closedAt = LocalDateTime.now()
             authorId = dbTicket.authorId
+            ticketPanel = dbTicket.ticketType
         }
     }
 
     if (authorId != null) {
         textChannel.getManager()
+            .setName("закрыт")
             .putMemberPermissionOverride(
                 authorId!!,
                 null,
@@ -76,4 +81,41 @@ fun ticketCloseApply(event: ButtonInteractionEvent) {
         .build()
 
     textChannel.sendMessage(message).queue()
+
+    val deleteButton = button(
+        customId = "btn_delete",
+        label = "Удалить",
+        style = ButtonStyle.DANGER,
+    )
+
+    val logButton = button(
+        customId = "btn_log",
+        label = "💾",
+        style = ButtonStyle.PRIMARY,
+
+    )
+
+    val adminContainer = Container.of(
+        TextDisplay.of(
+            "> ## ❌ Тикет закрыт \n\n"
+                    + "-# Автор: $authorId \n"
+                    + "-# Панель: $ticketPanel \n"
+        ),
+
+        Separator.createDivider(Separator.Spacing.LARGE),
+
+        ActionRow.of(
+            deleteButton,
+            logButton,
+        )
+
+    )
+
+    val adminMessage = MessageCreateBuilder()
+        .useComponentsV2()
+        .setComponents(adminContainer)
+        .build()
+
+    textChannel.sendMessage(adminMessage).queue()
+
 }

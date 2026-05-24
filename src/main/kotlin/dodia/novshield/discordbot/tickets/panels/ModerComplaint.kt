@@ -1,5 +1,6 @@
 package dodia.novshield.discordbot.tickets.panels
 
+import dev.minn.jda.ktx.interactions.components.ActionRow
 import dodia.novshield.discordbot.tickets.Panel
 import dodia.novshield.discordbot.tickets.ModalField
 
@@ -13,17 +14,59 @@ import net.dv8tion.jda.api.modals.Modal
 import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.components.separator.Separator
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import java.time.format.DateTimeFormatter
+
+import dodia.novshield.discordbot.tickets.database.Ticket
+
+
 
 
 
 object ModerComplaint : Panel(
     logChannel = "1507440553673883738",
     panelHEX = 0xFF0000,
-    supportRole = "1506319765730234379",
-    ticketCategory = "1506320009293467728",
+    supportRole = "1506319039012540487",
+    ticketCategory = "1506644887674552410",
     channelPrefix = "модер-жалоба"
 ) {
-    override fun sendTicketLog() {}
+    override fun sendTicketLog(event: ButtonInteractionEvent, dbTicket: Ticket) {
+        val jda = event.jda
+
+        val logTextChannel = jda.getTextChannelById(this.logChannel) ?: return
+
+
+        val field1Val = dbTicket.fields.find { it.fieldLabel == "Moder_field_1" }?.fieldValue ?: "Нет данных"
+        val field2Val = dbTicket.fields.find { it.fieldLabel == "Moder_field_2" }?.fieldValue ?: "Нет данных"
+        val field3Val = dbTicket.fields.find { it.fieldLabel == "Moder_field_3" }?.fieldValue ?: "Нет dados"
+
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+        val closedTime = dbTicket.closedAt?.format(formatter) ?: "Неизвестно"
+
+        val logContainer = Container.of(
+            TextDisplay.of("📁 **Архив тикета №${dbTicket.id} [Жалоба на модератора]**"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+
+            TextDisplay.of("**Информация:**\n• Автор: <@${dbTicket.authorId}>\n• Закрыл: ${event.user.asMention}\n• Время закрытия: $closedTime"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+
+            TextDisplay.of("**На кого подана жалоба?:**\n$field1Val"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of("**Причина:**\n$field2Val"),
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of("**Доказательства:**\n$field3Val")
+        ).withAccentColor(this.panelHEX)
+
+        val logMessage = MessageCreateBuilder()
+            .useComponentsV2()
+            .setComponents(logContainer)
+            .build()
+
+
+        logTextChannel.sendMessage(logMessage).queue()
+    }
 
     override fun showModal(event: StringSelectInteractionEvent) {
 
@@ -83,7 +126,13 @@ object ModerComplaint : Panel(
 
             )
 
-        return listOf(container)
+        val btnContainer = Container.of(
+            ActionRow.of(
+                closeButton
+            )
+        )
+
+        return listOf(container, btnContainer)
 
     }
 

@@ -23,6 +23,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import dodia.novshield.discordbot.tickets.database.Ticket
 import dodia.novshield.discordbot.tickets.database.TicketField
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 
 data class ModalField(
     val id: String,
@@ -51,7 +52,7 @@ abstract class Panel(
 
     )
 
-    abstract fun sendTicketLog()
+    abstract fun sendTicketLog(event: ButtonInteractionEvent, dbTicket: Ticket)
     abstract fun showModal(event: StringSelectInteractionEvent)
     abstract fun buildTicketMessage(event: ModalInteractionEvent): List<Container>
 

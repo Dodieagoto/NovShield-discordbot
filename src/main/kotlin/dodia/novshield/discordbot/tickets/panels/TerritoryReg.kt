@@ -5,6 +5,7 @@ import dodia.novshield.discordbot.tickets.ModalField
 
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import dev.minn.jda.ktx.interactions.components.Separator
+import net.dv8tion.jda.api.components.actionrow.ActionRow
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.components.container.Container
 import net.dv8tion.jda.api.components.textinput.TextInput
@@ -13,17 +14,52 @@ import net.dv8tion.jda.api.components.label.Label
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
 
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import java.time.format.DateTimeFormatter
+
+import dodia.novshield.discordbot.tickets.database.Ticket
+
 
 
 object TerritoryReg : Panel(
-    logChannel = "1507447988514062397",
+    logChannel = "1507440553673883738",
     panelHEX = 0xFF0000,
-    supportRole = "1506319765730234379",
-    ticketCategory = "1506320009293467728",
+    supportRole = "1506338573631356958",
+    ticketCategory = "1508061743749009519",
     channelPrefix = "территория"
 ){
-    override fun sendTicketLog() {
-        //todo() сделать логирование
+    override fun sendTicketLog(event: ButtonInteractionEvent, dbTicket: Ticket) {
+        val jda = event.jda
+        val logTextChannel = jda.getTextChannelById(this.logChannel) ?: return
+
+        val field1Val = dbTicket.fields.find { it.fieldLabel == "Territory_field_1" }?.fieldValue ?: "Нет данных"
+        val field2Val = dbTicket.fields.find { it.fieldLabel == "Territory_field_2" }?.fieldValue ?: "Нет данных"
+        val field3Val = dbTicket.fields.find { it.fieldLabel == "Territory_field_3" }?.fieldValue ?: "Нет данных"
+
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")
+        val closedTime = dbTicket.closedAt?.format(formatter) ?: "Неизвестно"
+
+        val logContainer = Container.of(
+            TextDisplay.of("📁 **Архив тикета №${dbTicket.id} [Регистрация территории]**"),
+            net.dv8tion.jda.api.components.separator.Separator.createDivider(net.dv8tion.jda.api.components.separator.Separator.Spacing.LARGE),
+
+            TextDisplay.of("**Информация:**\n• Автор: <@${dbTicket.authorId}>\n• Закрыл: ${event.user.asMention}\n• Время закрытия: $closedTime"),
+            net.dv8tion.jda.api.components.separator.Separator.createDivider(net.dv8tion.jda.api.components.separator.Separator.Spacing.LARGE),
+
+            TextDisplay.of("**Координаты территории:**\n$field1Val"),
+            net.dv8tion.jda.api.components.separator.Separator.createDivider(net.dv8tion.jda.api.components.separator.Separator.Spacing.LARGE),
+            TextDisplay.of("**Границы территории:**\n$field2Val"),
+            net.dv8tion.jda.api.components.separator.Separator.createDivider(net.dv8tion.jda.api.components.separator.Separator.Spacing.LARGE),
+            TextDisplay.of("**Владельцы территории:**\n$field3Val")
+        ).withAccentColor(this.panelHEX)
+
+        val logMessage = MessageCreateBuilder()
+            .useComponentsV2()
+            .setComponents(logContainer)
+            .build()
+
+        logTextChannel.sendMessage(logMessage).queue()
     }
 
     override fun showModal(event: StringSelectInteractionEvent) {
@@ -76,7 +112,13 @@ object TerritoryReg : Panel(
                 TextDisplay.of("**Владельцы территории:** $field3")
             )
 
-            return listOf(container)
+            val btnContainer = Container.of(
+                ActionRow.of(
+                    closeButton
+                )
+            )
+
+            return listOf(container, btnContainer)
         }
 
     val field1 = ModalField(
