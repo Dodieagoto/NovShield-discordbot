@@ -49,7 +49,7 @@ object ParliamentQuestion : Panel(
         event.replyModal(modal).queue()
     }
 
-    override fun buildTicketMessage(event: ModalInteractionEvent): Container {
+    override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
         val field1 = event.getValue("Parliament_field_1")
             ?.asString ?: "Нет данных"
@@ -58,14 +58,16 @@ object ParliamentQuestion : Panel(
             ?.asString ?: "Нет данных"
 
 
-        return Container.of(
+        val container = Container.of(
             TextDisplay.of("Вопрос парламент"),
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**Ваш никнейм:**\n$field1"),
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**Ваш вопрос:**\n$field2"),
 
-        )
+            )
+
+        return listOf(container)
 
     }
 

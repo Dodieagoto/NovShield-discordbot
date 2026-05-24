@@ -33,7 +33,7 @@ abstract class Panel(
 
     abstract fun sendTicketLog()
     abstract fun showModal(event: StringSelectInteractionEvent)
-    abstract fun buildTicketMessage(event: ModalInteractionEvent): Container
+    abstract fun buildTicketMessage(event: ModalInteractionEvent): List<Container>
 
     fun handleModalSubmit(event: ModalInteractionEvent) {
         val guild = event.guild ?: return
@@ -41,10 +41,10 @@ abstract class Panel(
         val category = guild.getCategoryById(ticketCategory)
         val support = guild.getRoleById(supportRole)
 
-        val container = buildTicketMessage(event)
+        val containers = buildTicketMessage(event)
         val message = MessageCreateBuilder()
             .useComponentsV2()
-            .setComponents(container)
+            .setComponents(containers)
             .build()
 
         val channelName = "$channelPrefix-${event.user.name}"

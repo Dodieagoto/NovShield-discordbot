@@ -67,7 +67,7 @@ object Patent : Panel(
     }
 
 
-    override fun buildTicketMessage(event: ModalInteractionEvent): Container {
+    override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
         val field1 = event.getValue("Patent_field_1")
             ?.asString ?: "Нет данных"
@@ -81,7 +81,7 @@ object Patent : Panel(
         val field4 = event.getValue("Patent_field_4")
             ?.asString ?: "Нет данных"
 
-        return Container.of(
+        val container = Container.of(
             TextDisplay.of("📜 Подача патента"),
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**Причина подачи патента:**\n$field1"),
@@ -92,7 +92,9 @@ object Patent : Panel(
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**Доказательства:**\n$field4"),
 
-        )
+            )
+
+        return listOf(container)
 
     }
 

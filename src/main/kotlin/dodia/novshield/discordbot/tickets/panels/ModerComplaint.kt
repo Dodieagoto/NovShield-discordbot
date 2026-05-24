@@ -59,7 +59,7 @@ object ModerComplaint : Panel(
 
     }
 
-    override fun buildTicketMessage(event: ModalInteractionEvent): Container {
+    override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
         val field1 = event.getValue("Moder_field_1")
             ?.asString ?: "Нет данных"
@@ -70,7 +70,8 @@ object ModerComplaint : Panel(
         val field3 = event.getValue("Moder_field_3")
             ?.asString ?: "Нет данных"
 
-        return Container.of(
+
+        val container = Container.of(
             TextDisplay.of("🛡️ Подача жалобы на модератора"),
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**На кого вы подаёте жалобу?:**\n$field1"),
@@ -79,7 +80,9 @@ object ModerComplaint : Panel(
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**Предоставьте доказательства:**\n$field3"),
 
-        )
+            )
+
+        return listOf(container)
 
     }
 

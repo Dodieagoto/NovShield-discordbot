@@ -58,7 +58,7 @@ object TerritoryReg : Panel(
         event.replyModal(modal).queue()
     }
 
-        override fun buildTicketMessage(event: ModalInteractionEvent): Container {
+        override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
             val field1 = event.getValue("Territory_field_1")
                 ?.asString ?: "Нет данных"
 
@@ -68,13 +68,15 @@ object TerritoryReg : Panel(
             val field3 = event.getValue("Territory_field_3")
                 ?.asString ?: "Нет данных"
 
-            return Container.of(
+            val container =  Container.of(
                 TextDisplay.of("🗺️ Регистрация территории"),
                 Separator(),
                 TextDisplay.of("**Координаты территории:** $field1"),
                 TextDisplay.of("**Границы территории:** $field2"),
                 TextDisplay.of("**Владельцы территории:** $field3")
             )
+
+            return listOf(container)
         }
 
     val field1 = ModalField(

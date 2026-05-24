@@ -72,7 +72,7 @@ object Court : Panel(
 
     }
 
-    override fun buildTicketMessage(event: ModalInteractionEvent): Container {
+    override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
         val field1 = event.getValue("Court_field_1")
             ?.asString ?: "Нет данных"
@@ -86,7 +86,7 @@ object Court : Panel(
         val field4 = event.getValue("Court_field_4")
             ?.asString ?: "Нет данных"
 
-        return Container.of(
+        val container = Container.of(
             TextDisplay.of("⚖️ Подача жалобы в суд"),
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**Причина подачи:**\n$field1"),
@@ -97,6 +97,8 @@ object Court : Panel(
             Separator.createDivider(Separator.Spacing.LARGE),
             TextDisplay.of("**Доказательства:**\n$field4")
         )
+
+        return listOf(container)
     }
 
 

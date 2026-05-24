@@ -49,7 +49,7 @@ object TechnicalQuestion : Panel(
         event.replyModal(modal).queue()
     }
 
-    override fun buildTicketMessage(event: ModalInteractionEvent): Container {
+    override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
         val field1 = event.getValue("Tech_field_1")
             ?.asString ?: "Нет данных"
@@ -57,12 +57,14 @@ object TechnicalQuestion : Panel(
         val field2 = event.getValue("Tech_field_2")
             ?.asString ?: "Нет данных"
 
-        return Container.of(
+        val container = Container.of(
             TextDisplay.of("🛠️ Технический вопрос"),
             Separator(),
             TextDisplay.of("**Никнейм:** $field1"),
             TextDisplay.of("**Вопрос:** $field2")
         )
+
+        return listOf(container)
 
     }
 
