@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import java.time.format.DateTimeFormatter
 
 import dodia.novshield.discordbot.tickets.database.Ticket
-
+import net.dv8tion.jda.api.components.separator.Separator
 
 
 object TerritoryReg : Panel(
@@ -95,21 +95,40 @@ object TerritoryReg : Panel(
     }
 
         override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
-            val field1 = event.getValue("Territory_field_1")
+            val pool1 = event.getValue("Territory_field_1")
                 ?.asString ?: "Нет данных"
 
-            val field2 = event.getValue("Territory_field_2")
+            val pool2 = event.getValue("Territory_field_2")
                 ?.asString ?: "Нет данных"
 
-            val field3 = event.getValue("Territory_field_3")
+            val pool3 = event.getValue("Territory_field_3")
                 ?.asString ?: "Нет данных"
 
-            val container =  Container.of(
-                TextDisplay.of("🗺️ Регистрация территории"),
-                Separator(),
-                TextDisplay.of("**Координаты территории:** $field1"),
-                TextDisplay.of("**Границы территории:** $field2"),
-                TextDisplay.of("**Владельцы территории:** $field3")
+            val upContent = Container.of(
+                TextDisplay.of(
+
+                    "> ## 🗺️ Регистрация территории <@&$supportRole> \n\n" +
+                            "> ${event.user.asMention} Ваша заявка подана! Тех. Админ ответит вам в тикете в течении **12 часов** "
+
+                ),
+
+                Separator.createDivider(Separator.Spacing.LARGE),
+
+
+                TextDisplay.of(
+                    "> :warning: Не пингуйте администрацию или ответственных людей в тикетах. Мы видим и помним про каждый созданный тикет"
+
+                )
+
+            ).withAccentColor(panelHEX)
+
+            val answersContainer = Container.of(
+
+                TextDisplay.of(
+                    "1. Укажите координаты территории \n```$pool1                      ``` \n" +
+                            "2. Укажите границы вашей территории \n```$pool2  ``` \n" +
+                            "3. Напишите никнейм(ы) владельца(ов) территории \n```$pool3 ``` \n "
+                )
             )
 
             val btnContainer = Container.of(
@@ -118,7 +137,7 @@ object TerritoryReg : Panel(
                 )
             )
 
-            return listOf(container, btnContainer)
+            return listOf(upContent, answersContainer, btnContainer)
         }
 
     val field1 = ModalField(

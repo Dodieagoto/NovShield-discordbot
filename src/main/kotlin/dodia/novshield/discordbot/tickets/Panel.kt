@@ -8,21 +8,19 @@ package dodia.novshield.discordbot.tickets
 import dev.minn.jda.ktx.interactions.components.button
 import net.dv8tion.jda.api.Permission
 
-import net.dv8tion.jda.api.components.actionrow.ActionRow
-import dev.minn.jda.ktx.interactions.components.button
 import net.dv8tion.jda.api.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.components.container.Container
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
-import java.awt.Color
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDateTime
 import dodia.novshield.discordbot.tickets.database.Ticket
 import dodia.novshield.discordbot.tickets.database.TicketField
+import net.dv8tion.jda.api.components.MessageTopLevelComponent
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 
 data class ModalField(
@@ -44,11 +42,11 @@ abstract class Panel(
 ){
 
     val closeButton = button(
-        label = "Закрыть",
+        label = "Закрыть тикет",
         style = ButtonStyle.DANGER,
 
         customId = "btn_close",
-        emoji = Emoji.fromUnicode("❌")
+        emoji = Emoji.fromUnicode("🔐")
 
     )
 

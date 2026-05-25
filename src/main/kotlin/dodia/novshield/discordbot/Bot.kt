@@ -14,6 +14,7 @@ import dev.minn.jda.ktx.events.listener
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import dev.minn.jda.ktx.coroutines.await
+import dev.minn.jda.ktx.interactions.components.MediaGalleryItem
 import net.dv8tion.jda.api.components.container.Container
 import java.awt.Color
 import net.dv8tion.jda.api.components.textdisplay.TextDisplay
@@ -21,6 +22,7 @@ import net.dv8tion.jda.api.components.separator.Separator
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.mediagallery.MediaGallery
 import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
@@ -52,11 +54,23 @@ fun main(){
     jda.listener<MessageReceivedEvent> { event ->
 
         val upContainer = Container.of(
-            TextDisplay.of("Тест сообщения с конпонентами"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("гойда"),
+            MediaGallery.of(
+                MediaGalleryItem(
+                    "https://cdn.discordapp.com/attachments/1499428662137720943/1507802277123985428/Frame_1642.png?ex=6a148b4c&is=6a1339cc&hm=4ac1695459132d45515e9f8443cbfd90bc3ab0949e1f1e2fdacfae2a14c0cd16&"
+                )
+            ),
 
-        ).withAccentColor(Color(0xFF0000).rgb)
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of(
+                "> ### :identification_card: МЕНЮ ПОДДЕРЖКИ\n" +
+                        "В этом канале вы можете подать жалобу или задать вопрос к Администрации сервера." +
+                        "\n \n> Наша команда проекта совместно с администрацией постарается вам помочь в наикратчайшие сроки! Не пингуйте администрацию, система тикетов будет **автоматически** напоминать об открытом тикете.\n"
+            ),
+
+            Separator.createDivider(Separator.Spacing.LARGE),
+            TextDisplay.of("> :warning: Ответ на тикет может занимать до **24 часов**!")
+
+        ).withAccentColor(Color(0xEA9545).rgb)
 
         val selMenu = StringSelectMenu.create("sel_menu")
 
@@ -106,7 +120,7 @@ fun main(){
 
         val downContainer = Container.of(
             ActionRow.of(selMenu)
-        ).withAccentColor(Color(0xFF0000).rgb)
+        ).withAccentColor(Color(0xEA9545).rgb)
 
         val message = MessageCreateBuilder()
             .useComponentsV2()

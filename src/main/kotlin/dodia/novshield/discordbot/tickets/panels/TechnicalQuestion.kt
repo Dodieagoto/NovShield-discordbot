@@ -20,10 +20,11 @@ import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import java.time.format.DateTimeFormatter
 
 import dodia.novshield.discordbot.tickets.database.Ticket
+import net.dv8tion.jda.api.components.separator.Separator
 
 object TechnicalQuestion : Panel(
     logChannel = "1507448073155121242",
-    panelHEX = 0xFF0000,
+    panelHEX = 0x7557A5,
     supportRole = "1506319265400225803",
     ticketCategory = "1508060340024381440",
     channelPrefix = "тех-вопрос"
@@ -84,18 +85,39 @@ object TechnicalQuestion : Panel(
 
     override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
-        val field1 = event.getValue("Tech_field_1")
+        val pool1 = event.getValue("Tech_field_1")
             ?.asString ?: "Нет данных"
 
-        val field2 = event.getValue("Tech_field_2")
+        val pool2 = event.getValue("Tech_field_2")
             ?.asString ?: "Нет данных"
 
-        val container = Container.of(
-            TextDisplay.of("🛠️ Технический вопрос"),
-            Separator(),
-            TextDisplay.of("**Никнейм:** $field1"),
-            TextDisplay.of("**Вопрос:** $field2")
+
+        val upContent = Container.of(
+            TextDisplay.of(
+
+                "> ## 🛠️ Технический вопрос <@&$supportRole> \n\n" +
+                        "> ${event.user.asMention} Ваш вопрос подан на рассмотрение! Тех. Админ ответит вам в тикете в течении **12 часов** "
+
+            ),
+
+            Separator.createDivider(Separator.Spacing.LARGE),
+
+
+            TextDisplay.of(
+                "> :warning: Не пингуйте администрацию или ответственных людей в тикетах. Мы видим и помним про каждый созданный тикет"
+
+            )
+
+        ).withAccentColor(panelHEX)
+
+        val answersContainer = Container.of(
+
+            TextDisplay.of(
+                "1. Ваш никнейм \n```$pool1                      ``` \n" +
+                        "2. Напишите свой вопрос \n```$pool2  ``` \n"
+            )
         )
+
 
         val btnContainer = Container.of(
             ActionRow.of(
@@ -103,7 +125,7 @@ object TechnicalQuestion : Panel(
             )
         )
 
-        return listOf(container, btnContainer)
+        return listOf(upContent, answersContainer, btnContainer)
 
     }
 

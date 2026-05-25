@@ -23,7 +23,7 @@ import dodia.novshield.discordbot.tickets.database.Ticket
 
 object Court : Panel(
     logChannel = "1507440553673883738",
-    panelHEX = 0xFF0000,
+    panelHEX = 0xffd943,
     supportRole = "1506338573631356958",
     ticketCategory = "1508059255893393499",
     channelPrefix = "суд"
@@ -115,30 +115,45 @@ object Court : Panel(
 
     override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
-        val field1 = event.getValue("Court_field_1")
+        val pool1 = event.getValue("Court_field_1")
             ?.asString ?: "Нет данных"
 
-        val field2 = event.getValue("Court_field_2")
+        val pool2 = event.getValue("Court_field_2")
             ?.asString ?: "Нет данных"
 
-        val field3 = event.getValue("Court_field_3")
+        val pool3 = event.getValue("Court_field_3")
             ?.asString ?: "Нет данных"
 
-        val field4 = event.getValue("Court_field_4")
+        val pool4 = event.getValue("Court_field_4")
             ?.asString ?: "Нет данных"
 
-        val container = Container.of(
-            TextDisplay.of("⚖️ Подача жалобы в суд"),
+
+        val upContent = Container.of(
+            TextDisplay.of(
+
+                "> ## :scales: Жалоба в суд <@&$supportRole> \n\n" +
+                "> ${event.user.asMention} Ваша жалоба подана на рассмотрение! Судья ответит вам в тикете в течении **12 часов** "
+
+            ),
+
             Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Причина подачи:**\n$field1"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Описание дела:**\n$field2"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Требования:**\n$field3"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Доказательства:**\n$field4")
+
+
+            TextDisplay.of(
+                "> :warning: Не пингуйте администрацию или ответственных людей в тикетах. Мы видим и помним про каждый созданный тикет"
+
+            )
+
+        ).withAccentColor(panelHEX)
+
+        val answersContainer = Container.of(
+
+        TextDisplay.of(
+                "1. Укажите причину подачи \n```$pool1                      ``` \n" +
+                    "2. Описание дела \n```$pool2  ``` \n" +
+                    "3. Требования \n```$pool3 ``` \n" +
+                    "4. Доказательства \n```$pool4 ``` ")
         )
-
 
 
         val btnContainer = Container.of(
@@ -147,7 +162,7 @@ object Court : Panel(
             )
         )
 
-        return listOf(container, btnContainer)
+        return listOf(upContent, answersContainer, btnContainer)
     }
 
 

@@ -22,7 +22,7 @@ import dodia.novshield.discordbot.tickets.database.Ticket
 
 object ParliamentQuestion : Panel(
     logChannel = "1507448073155121242",
-    panelHEX = 0xFF0000,
+    panelHEX = 0x7C91DB,
     supportRole = "1506335312295497758",
     ticketCategory = "1508061015776952430",
     channelPrefix = "парламент"
@@ -84,21 +84,38 @@ object ParliamentQuestion : Panel(
 
     override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
-        val field1 = event.getValue("Parliament_field_1")
+        val pool1 = event.getValue("Parliament_field_1")
             ?.asString ?: "Нет данных"
 
-        val field2 = event.getValue("Parliament_field_2")
+        val pool2 = event.getValue("Parliament_field_2")
             ?.asString ?: "Нет данных"
 
 
-        val container = Container.of(
-            TextDisplay.of("Вопрос парламент"),
+        val upContent = Container.of(
+            TextDisplay.of(
+
+                "> ## 🏛️ Вопрос к парламенту <@&$supportRole> \n\n" +
+                        "> ${event.user.asMention} Ваш вопрос подан на рассмотрение! Парламентарии ответят вам в течении **12 часов** "
+
+            ),
+
             Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Ваш никнейм:**\n$field1"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Ваш вопрос:**\n$field2"),
+
+
+            TextDisplay.of(
+                "> :warning: Не пингуйте администрацию или ответственных людей в тикетах. Мы видим и помним про каждый созданный тикет"
 
             )
+
+        ).withAccentColor(panelHEX)
+
+        val answersContainer = Container.of(
+
+            TextDisplay.of(
+                "1. Ваш никнейм \n```$pool1                      ``` \n" +
+                        "2. Напишите свой вопрос \n```$pool2  ``` \n"
+            )
+        )
 
         val btnContainer = Container.of(
             ActionRow.of(
@@ -106,7 +123,7 @@ object ParliamentQuestion : Panel(
             )
         )
 
-        return listOf(container, btnContainer)
+        return listOf(upContent,answersContainer, btnContainer)
 
     }
 

@@ -22,7 +22,7 @@ import dodia.novshield.discordbot.tickets.database.Ticket
 
 object Patent : Panel(
     logChannel = "1507447988514062397",
-    panelHEX = 0xFF0000,
+    panelHEX = 0xC3B091,
     supportRole = "1506319765730234379",
     ticketCategory = "1508061390089228378",
     channelPrefix = "патент"
@@ -98,25 +98,42 @@ object Patent : Panel(
 
     override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
-        val field1 = event.getValue("Patent_field_1")
+        val pool1 = event.getValue("Patent_field_1")
             ?.asString ?: "Нет данных"
 
-        val field2 = event.getValue("Patent_field_2")
+        val pool2 = event.getValue("Patent_field_2")
             ?.asString ?: "Нет данных"
 
-        val field3 = event.getValue("Patent_field_3")
+        val pool3 = event.getValue("Patent_field_3")
             ?.asString ?: "Нет данных"
 
-        val container = Container.of(
-            TextDisplay.of("📜 Подача патента"),
+        val upContent = Container.of(
+            TextDisplay.of(
+
+                "> ## 📜 Регистрация патента <@&$supportRole> \n\n" +
+                        "> ${event.user.asMention} Ваша заявка было создана! Тех. Админ ответит вам в тикете в течении **12 часов** "
+
+            ),
+
             Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Причина подачи патента:**\n$field1"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Краткое описание дела:**\n$field2"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Требования:**\n$field3"),
+
+
+            TextDisplay.of(
+                "> :warning: Не пингуйте администрацию или ответственных людей в тикетах. Мы видим и помним про каждый созданный тикет"
 
             )
+
+        ).withAccentColor(panelHEX)
+
+
+        val answersContainer = Container.of(
+
+            TextDisplay.of(
+                "1. На что патент? \n```$pool1                      ``` \n" +
+                        "2. Доказательства \n```$pool2  ``` \n" +
+                        "3. Дайте чёткое обоснование \n```$pool3 ``` \n "
+            )
+        )
 
         val btnContainer = Container.of(
             ActionRow.of(
@@ -124,7 +141,7 @@ object Patent : Panel(
             )
         )
 
-        return listOf(container, btnContainer)
+        return listOf(upContent, answersContainer, btnContainer)
 
     }
 

@@ -1,10 +1,8 @@
 package dodia.novshield.discordbot.tickets.panels
 
-import dev.minn.jda.ktx.interactions.components.ActionRow
 import dodia.novshield.discordbot.tickets.Panel
 import dodia.novshield.discordbot.tickets.ModalField
 
-import dev.minn.jda.ktx.interactions.components.button
 import net.dv8tion.jda.api.components.textinput.TextInputStyle
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
@@ -27,7 +25,7 @@ import dodia.novshield.discordbot.tickets.database.Ticket
 
 object ModerComplaint : Panel(
     logChannel = "1507440553673883738",
-    panelHEX = 0xFF0000,
+    panelHEX = 0xE5644F,
     supportRole = "1506319039012540487",
     ticketCategory = "1506644887674552410",
     channelPrefix = "модер-жалоба"
@@ -105,26 +103,42 @@ object ModerComplaint : Panel(
 
     override fun buildTicketMessage(event: ModalInteractionEvent): List<Container> {
 
-        val field1 = event.getValue("Moder_field_1")
+        val pool1 = event.getValue("Moder_field_1")
             ?.asString ?: "Нет данных"
 
-        val field2 = event.getValue("Moder_field_2")
+        val pool2 = event.getValue("Moder_field_2")
             ?.asString ?: "Нет данных"
 
-        val field3 = event.getValue("Moder_field_3")
+        val pool3 = event.getValue("Moder_field_3")
             ?.asString ?: "Нет данных"
 
 
-        val container = Container.of(
-            TextDisplay.of("🛡️ Подача жалобы на модератора"),
+        val upContent = Container.of(
+            TextDisplay.of(
+
+                "> ## 🛡️ Жалоба на модератора <@&$supportRole> \n\n" +
+                        "> ${event.user.asMention} Ваша жалоба подана на рассмотрение! Тех. Админ ответит вам в тикете в течении **12 часов** "
+
+            ),
+
             Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**На кого вы подаёте жалобу?:**\n$field1"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Причина подачи жалобы:**\n$field2"),
-            Separator.createDivider(Separator.Spacing.LARGE),
-            TextDisplay.of("**Предоставьте доказательства:**\n$field3"),
+
+
+            TextDisplay.of(
+                "> :warning: Не пингуйте администрацию или ответственных людей в тикетах. Мы видим и помним про каждый созданный тикет"
 
             )
+
+        ).withAccentColor(panelHEX)
+
+        val answersContainer = Container.of(
+
+            TextDisplay.of(
+                "1. На кого вы подаёте жалобу? \n```$pool1                      ``` \n" +
+                        "2. Причина подачи жалобы \n```$pool2  ``` \n" +
+                        "3. Предоставьте доказательства \n```$pool3 ``` \n "
+            )
+        )
 
         val btnContainer = Container.of(
             ActionRow.of(
@@ -132,7 +146,7 @@ object ModerComplaint : Panel(
             )
         )
 
-        return listOf(container, btnContainer)
+        return listOf(upContent, answersContainer, btnContainer)
 
     }
 
