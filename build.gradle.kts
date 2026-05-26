@@ -37,14 +37,19 @@ dependencies {
 }
 
 application {
-    mainClass.set("dodia.novshield.discordbot.MainKt")
+    mainClass.set("dodia.novshield.discordbot.BotKt")
 }
 
 tasks.withType<ShadowJar> {
-    archiveBaseName.set("novshield-bot")
-    archiveClassifier.set("")
-    archiveVersion.set(project.version.toString())
+    archiveBaseName.set("nsh-bot")
+    archiveClassifier.set("all")
+    archiveVersion.set("")
+
     mergeServiceFiles()
+
+    manifest {
+        attributes["Main-Class"] = "dodia.novshield.discordbot.BotKt"
+    }
 }
 
 tasks.build {
