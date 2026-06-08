@@ -6,15 +6,17 @@ import dev.minn.jda.ktx.events.listener
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
+import dodia.novshield.discordbot.tickets.commands.membercontrol.ModalHandler
 import dodia.novshield.discordbot.tickets.panels.Court
 import dodia.novshield.discordbot.tickets.panels.ModerComplaint
 import dodia.novshield.discordbot.tickets.panels.ParliamentQuestion
 import dodia.novshield.discordbot.tickets.panels.Patent
 import dodia.novshield.discordbot.tickets.panels.TechnicalQuestion
 import dodia.novshield.discordbot.tickets.panels.TerritoryReg
+import net.dv8tion.jda.api.entities.Guild
 
 
-fun modalSubmitListener(jda: JDA) {
+fun modalSubmitListener(jda: JDA, guild: Guild) {
 
     jda.listener<ModalInteractionEvent> { event ->
 
@@ -55,6 +57,13 @@ fun modalSubmitListener(jda: JDA) {
                 event.deferEdit().queue()
                 return@listener
 
+            }
+
+            "modal-user-action" -> {
+
+                ModalHandler.onModalHandler(event, guild)
+                event.deferEdit().queue()
+                return@listener
             }
 
         }
