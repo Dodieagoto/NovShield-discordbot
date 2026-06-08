@@ -6,7 +6,7 @@ import dev.minn.jda.ktx.events.listener
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-import dodia.novshield.discordbot.tickets.commands.membercontrol.ModalHandler
+import dodia.novshield.discordbot.tickets.commands.verdict.VerdictModalHandler
 import dodia.novshield.discordbot.tickets.panels.Court
 import dodia.novshield.discordbot.tickets.panels.ModerComplaint
 import dodia.novshield.discordbot.tickets.panels.ParliamentQuestion
@@ -61,7 +61,14 @@ fun modalSubmitListener(jda: JDA, guild: Guild) {
 
             "modal-user-action" -> {
 
-                ModalHandler.onModalHandler(event, guild)
+                VerdictModalHandler.onModalHandler(event, guild)
+                event.deferEdit().queue()
+                return@listener
+            }
+
+            "verdict-modal"  -> {
+
+                VerdictModalHandler.onModalHandler(event, guild)
                 event.deferEdit().queue()
                 return@listener
             }

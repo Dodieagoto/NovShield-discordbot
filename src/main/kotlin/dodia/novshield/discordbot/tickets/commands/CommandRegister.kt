@@ -13,6 +13,11 @@ object CommandRegister {
                     guild = true,
                 )
             }
+            slash("вердикт","Вынести вердикт по тикету"){
+                restrict(
+                    guild = true,
+                )
+            }
         }.queue()
 
         CommandsHandler.onCommand(jda)
